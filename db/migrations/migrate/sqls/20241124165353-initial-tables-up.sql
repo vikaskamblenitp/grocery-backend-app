@@ -47,9 +47,10 @@ CREATE TABLE data_items (
     price NUMERIC(10, 2) NOT NULL,
     quantity INT NOT NULL,
     status item_status NOT NULL,
+    image_url VARCHAR(255),
+
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT data_items_pk PRIMARY KEY (id)
 );
 
@@ -88,8 +89,7 @@ INSERT INTO core_order_status (id, code, label) VALUES
 CREATE TABLE data_orders (
     id UUID DEFAULT gen_random_uuid() NOT NULL,
     user_id UUID NOT NULL,
-    amount NUMERIC(10, 2) NOT NULL,
-    item_quantity INT NOT NULL,
+    total_price NUMERIC(10, 2) NOT NULL,
     status INT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
