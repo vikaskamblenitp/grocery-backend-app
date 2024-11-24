@@ -1,0 +1,23 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# hook to enforce that current branch is up-to-date with latest
+# changes from main before push
+
+# the output of rev-list in the following test will be empty if there
+# are no commits in main that aren't in the current branch
+
+current_branch="$(git rev-parse --abbrev-ref HEAD)"
+skip_branch_regex="^(release|hotfix)(\/[^\/]+)?\/[a-z0-9._-]+$"
+
+if [[ ! $current_branch =~ $skip_branch_regex ]]
+then
+	git fetch origin main
+	if [[ ! -z $(git rev-list ..origin/main) ]]; then
+			echo "☒☒ abandoning push"
+			echo "☒☒ please pull latest changes from main and try again"
+			exit 1
+	fi
+fi
+
+exit 0

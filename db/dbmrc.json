@@ -1,0 +1,22 @@
+{
+  "dev": {
+    "driver": "pg",
+    "host": { "ENV": "CONFIG_DB_HOST" },
+    "port": { "ENV": "CONFIG_DB_PORT" },
+    "database": { "ENV": "CONFIG_DB_NAME" },
+    "user": { "ENV": "CONFIG_DB_USER" },
+    "password": { "ENV": "CONFIG_DB_PASSWORD" },
+		"sql-file": true
+  },
+  "prod": {
+    "driver": "pg",
+    "host": { "ENV": "CONFIG_DB_HOST" },
+    "port": { "ENV": "CONFIG_DB_PORT" },
+    "database": { "ENV": "CONFIG_DB_NAME" },
+    "user": { "ENV": "CONFIG_DB_USER" },
+    "password": { "ENV": "CONFIG_DB_PASSWORD" },
+    "ssl": { "rejectUnauthorized": false },
+		"sql-file": true
+  },
+  "sql-file": true
+}
