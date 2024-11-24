@@ -1,4 +1,4 @@
-TAG_NAME=worth-api-mvp
+TAG_NAME=-grocery-app
 VERSION=$(shell git rev-parse --short HEAD)
 IMAGE_TAG=$(TAG_NAME):$(VERSION)
 IMAGE_TAG_LATEST=$(TAG_NAME):latest

@@ -19,7 +19,7 @@ app.use("/", (req, res) => {
 });
 
 app.use("/", (_req, res) => {
-	res.json({ info: "Worth AI api server. Please visit health route for more information." });
+	res.json({ info: "Grocery api server. Please visit health route for more information." });
 });
 
 app.use(((err, req, res, next) => {
