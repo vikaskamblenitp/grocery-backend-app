@@ -1,24 +1,30 @@
 import { Request, Response } from "express";
 import { groceryService } from "./groceryService";
+import { catchAsync } from "#utils/catchAsync";
 
 export const controller = {
-  getAllGroceryItems: async (req: Request, res: Response) => {
+  getAllGroceryItems: catchAsync(async (req: Request, res: Response) => {
     const response = await groceryService.getAllGroceryItems();
     res.jsend.success(response, "Grocery items fetched successfully");
-  },
+  }),
 
-  getGroceryItemById: async (req: Request, res: Response) => {
+  getGroceryItemById: catchAsync(async (req: Request, res: Response) => {
     const response = await groceryService.getGroceryItemById(req.params.ID);
     res.jsend.success(response, "Grocery item fetched successfully");
-  },
+  }),
 
-  addGroceryItem: async (req: Request, res: Response) => {
+  addGroceryItem: catchAsync(async (req: Request, res: Response) => {
     await groceryService.addGroceryItem(req.body);
     res.jsend.success(null, "Grocery item added successfully");
-  },
+  }),
 
-  updateGroceryItem: async (req: Request, res: Response) => {
+  updateGroceryItem: catchAsync(async (req: Request, res: Response) => {
     const response = await groceryService.updateGroceryItem(req.params.ID, req.body);
     res.jsend.success(response, "Grocery item updated successfully");
-  }
+  }),
+
+  adjustStock: catchAsync(async (req: Request, res: Response) => {
+    const response = await groceryService.adjustStock(req.params.ID, req.body);
+    res.jsend.success(response, "Grocery item stock increased successfully");
+  })
 }

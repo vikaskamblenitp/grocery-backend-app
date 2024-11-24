@@ -1,5 +1,8 @@
+import { ERROR_CODES, GROCERY_ITEM_STATUS } from "#constants";
 import { prisma } from "#helpers/prismaClient";
 import { data_items as GroceryItem } from "@prisma/client";
+import { GroceryItemApiError } from "./error";
+import { StatusCodes } from "http-status-codes";
 
 
 export class GroceryRepository {
@@ -10,7 +13,7 @@ export class GroceryRepository {
   async findById(id: string) {
     const item = await prisma.data_items.findUnique({ where: { id } });
 
-    if (!item) throw new Error(`Item with ID ${id} not found`);
+    if (!item) throw new GroceryItemApiError(`Item with ID ${id} not found`, StatusCodes.NOT_FOUND, ERROR_CODES.NOT_FOUND);
 
     return item;
   }
@@ -38,22 +41,28 @@ export class GroceryRepository {
   }
 
   updateStock(id: string, quantity: number) {
-    return prisma.data_items.update({
-      where: { id },
-      data: { quantity },
+    return prisma.$transaction(async( tx) => {
+      const updatedItem = await prisma.data_items.update({
+        where: { id },
+        data: { quantity }
+      });
+
+      if (updatedItem.quantity === 0) {
+        await tx.data_items.update({
+          where: { id },
+          data: { status:  GROCERY_ITEM_STATUS.OUT_OF_STOCK as GroceryItem["status"] } 
+        });
+
+        await tx.data_items_status_history.create({
+          data: { item_id: id, status: GROCERY_ITEM_STATUS.OUT_OF_STOCK as GroceryItem["status"] }
+        });
+      }
     });
   }
 
   async getStock(id: string) {
-    const item = await prisma.data_items.findUnique({ where: { id } });
-    if (!item) throw new Error(`Item with ID ${id} not found`);
+    const item = await prisma.data_items.findUnique({ where: { id }, select: { quantity: true } });
+    if (!item) throw new GroceryItemApiError(`Item with ID ${id} not found`, StatusCodes.NOT_FOUND, ERROR_CODES.NOT_FOUND);
     return item.quantity;
-  }
-
-  async adjustStock(id: string, adjustment: number) {
-    const item = await this.findById(id);
-    const newQuantity = item.quantity + adjustment;
-    if (newQuantity < 0) throw new Error(`Insufficient stock for item with ID ${id}`);
-    return this.updateStock(id, newQuantity);
   }
 }

@@ -14,4 +14,6 @@ router.route("/grocery-items/:ID")
   .patch(api.updateGroceryItem)
   .all(methodNotAllowed);
 
+router.route("/grocery-items/:ID/stock").patch(api.adjustStock).all(methodNotAllowed);
+
 export default router;
