@@ -1,11 +1,16 @@
+import { envConfig } from '#configs/env.config.js';
+import { prisma } from '#helpers/prismaClient.js';
 import { app } from './app.js';
 import { IncomingMessage, Server, ServerResponse } from 'http';
 
 let server: null | Server<typeof IncomingMessage, typeof ServerResponse> = null;
 
-const init = () => {
-	server = app.listen(3000, () => {
-		console.log("Server listening on port 3000");
+const init = async () => {
+	await prisma.$connect();
+	console.log("Database connected");
+
+	server = app.listen(envConfig.APP_PORT, () => {
+		console.log(`Listening on ${envConfig.HOSTNAME} http://localhost:${envConfig.APP_PORT}`);
 	}) as Server<typeof IncomingMessage, typeof ServerResponse>;
 }
 
