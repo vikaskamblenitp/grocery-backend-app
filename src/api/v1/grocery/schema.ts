@@ -37,15 +37,25 @@ export const schema = {
     body: z.object({
       name: z.string().optional(),
       price: z.number().min(0.01).optional(),
-      quantity: z.number().min(1).optional(),
       image_url: z.string().url().optional(),
       description: z.string().min(3).max(255).optional(),
+      status: z.enum(["ACTIVE", "INACTIVE", "DELETED", "OUT_OF_STOCK"]).optional(),
     })
   }),
 
   deleteGroceryItem: z.object({
     params: z.object({
       id: z.string().uuid(),
+    })
+  }),
+
+  adjustStock: z.object({
+    params: z.object({
+      id: z.string().uuid(),
+    }),
+    body: z.object({
+      quantity: z.number().min(1),
+      action: z.enum(["increase", "decrease"]),
     })
   })
 }

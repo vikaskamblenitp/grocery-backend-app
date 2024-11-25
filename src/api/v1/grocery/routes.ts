@@ -17,6 +17,8 @@ router.route("/grocery-items/:itemID")
   .delete(validateTypedSchema(schema.deleteGroceryItem) as (req, res, next) => void, api.deleteGroceryItem)
   .all(methodNotAllowed);
 
-router.route("/grocery-items/:itemID/stock").patch(api.adjustStock).all(methodNotAllowed);
+router.route("/grocery-items/:itemID/manage-stock")
+  .patch(validateTypedSchema(schema.adjustStock) as (req, res, next) => void, api.adjustStock)
+  .all(methodNotAllowed);
 
 export default router;
