@@ -4,7 +4,7 @@ import { catchAsync } from "#utils/catchAsync";
 
 export const controller = {
   getAllGroceryItems: catchAsync(async (req: Request, res: Response) => {
-    const response = await groceryService.getAllGroceryItems(req.query);
+    const response = await groceryService.getAllGroceryItems(req.query, res.locals.user);
     res.jsend.success(response, "Grocery items fetched successfully");
   }),
 
