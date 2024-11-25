@@ -1,4 +1,4 @@
-import { data_items as GroceryItem } from "@prisma/client";
+import { data_items as GroceryItem, Prisma } from "@prisma/client";
 import { GroceryRepository } from "./groceryRepository";
 import { v4 as uuidv4 } from 'uuid';
 import { GroceryItemApiError } from "./error";
@@ -17,8 +17,46 @@ class GroceryService {
     await this.repository.create(itemData);
   }
 
-  async getAllGroceryItems() {
-    const response = await this.repository.findAll();
+  async getAllGroceryItems(query) {
+    const {
+      name,
+      minPrice,
+      maxPrice,
+      status,
+      page = '1',
+      limit = '10',
+      sortField = 'created_at',
+      sortOrder = 'asc',
+    } = query;
+
+    const filters: Prisma.Enumerable<Prisma.data_itemsWhereInput> = [];
+
+    // Add filters based on query params
+    if (name) {
+      filters.push({ name: { contains: name, mode: 'insensitive' } });
+    }
+    if (minPrice) {
+      filters.push({ price: { gte: parseFloat(minPrice) } });
+    }
+    if (maxPrice) {
+      filters.push({ price: { lte: parseFloat(maxPrice) } });
+    }
+
+    if (status) {
+      filters.push({ status });
+    }
+
+    const response = await this.repository.findAll({
+      filters,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+      },
+      sort: {
+        field: sortField as keyof Prisma.data_itemsOrderByWithRelationInput,
+        order: sortOrder as 'asc' | 'desc',
+      },
+    });
 
     return { data: response };
   }

@@ -1,13 +1,28 @@
 import { ERROR_CODES, GROCERY_ITEM_STATUS } from "#constants";
 import { prisma } from "#helpers/prismaClient";
-import { data_items as GroceryItem } from "@prisma/client";
+import { data_items as GroceryItem, Prisma } from "@prisma/client";
 import { GroceryItemApiError } from "./error";
 import { StatusCodes } from "http-status-codes";
+import { buildPrismaQuery } from "#utils/prismaQueryBuilder";
 
 
 export class GroceryRepository {
-  findAll() {
-    return prisma.data_items.findMany();
+  findAll(payload) {
+    console.log(payload);
+
+    const queryOptions = buildPrismaQuery<
+      Prisma.data_itemsWhereInput,
+      keyof Prisma.data_itemsOrderByWithRelationInput
+    >(payload);
+
+    console.log(queryOptions);
+    
+    return prisma.data_items.findMany({
+      where: queryOptions.where,
+      take: queryOptions.take,
+      skip: queryOptions.skip,
+      orderBy: queryOptions.orderBy as Prisma.data_itemsOrderByWithRelationInput,
+    });
   }
 
   async findById(id: string) {
@@ -41,7 +56,7 @@ export class GroceryRepository {
   }
 
   updateStock(id: string, quantity: number) {
-    return prisma.$transaction(async( tx) => {
+    return prisma.$transaction(async (tx) => {
       const updatedItem = await prisma.data_items.update({
         where: { id },
         data: { quantity }
@@ -50,7 +65,7 @@ export class GroceryRepository {
       if (updatedItem.quantity === 0) {
         await tx.data_items.update({
           where: { id },
-          data: { status:  GROCERY_ITEM_STATUS.OUT_OF_STOCK as GroceryItem["status"] } 
+          data: { status: GROCERY_ITEM_STATUS.OUT_OF_STOCK as GroceryItem["status"] }
         });
 
         await tx.data_items_status_history.create({
