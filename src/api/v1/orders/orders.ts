@@ -23,7 +23,7 @@ class Orders {
         }
 
         if (itemData.quantity < item.quantity) {
-          throw new OrdersApiError("Item out of stock", StatusCodes.BAD_REQUEST, ERROR_CODES.NOT_ALLOWED);
+          throw new OrdersApiError(`Only ${itemData.quantity} ${itemData.name} are in stock`, StatusCodes.BAD_REQUEST, ERROR_CODES.NOT_ALLOWED);
         }
 
         return itemData;
