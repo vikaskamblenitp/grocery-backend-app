@@ -23,6 +23,11 @@ export const controller = {
     res.jsend.success(response, "Grocery item updated successfully");
   }),
 
+  deleteGroceryItem: catchAsync(async (req: Request, res: Response) => {
+    await groceryService.deleteGroceryItem(req.params.itemID);
+    res.jsend.success(null, "Grocery item deleted successfully");
+  }),
+
   adjustStock: catchAsync(async (req: Request, res: Response) => {
     const response = await groceryService.adjustStock(req.params.itemID, req.body);
     res.jsend.success(response, "Grocery item stock increased successfully");

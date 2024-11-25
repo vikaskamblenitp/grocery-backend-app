@@ -1,9 +1,7 @@
 import { z } from 'zod';
 
-// Define Zod schema for query parameters
-
 export const schema = {
-  groceryQuerySchema: z.object({
+  getAllGroceryItems: z.object({
     query: z.object({
       name: z.string().optional(),
       minPrice: z.string().regex(/^\d+(\.\d{1,2})?$/u, "Must be a valid number").optional(),
@@ -13,6 +11,34 @@ export const schema = {
       sortField: z.enum(["price", "created_at", "name"]).default("created_at"),
       sortOrder: z.enum(["asc", "desc"]).default("asc"),
       status: z.enum(["ACTIVE", "INACTIVE", "DELETED", "OUT_OF_STOCK"]).optional(),
+    })
+  }),
+
+  addGroceryItemSchema: z.object({
+    body: z.object({
+      name: z.string().min(3).max(255),
+      price: z.number().min(0.01),
+      quantity: z.number().min(1),
+      description: z.string().min(3).max(255),
+      image_url: z.string().url().optional(),
+    })
+  }),
+
+  getGroceryItemById: z.object({
+    params: z.object({
+      id: z.string().uuid(),
+    })
+  }),
+
+  updateGroceryItem: z.object({
+    params: z.object({
+      id: z.string().uuid(),
+    })
+  }),
+
+  deleteGroceryItem: z.object({
+    params: z.object({
+      id: z.string().uuid(),
     })
   })
 }

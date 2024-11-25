@@ -7,13 +7,14 @@ import { schema } from "./schema";
 const router = Router();
 
 router.route("/grocery-items")
-  .get((req, res, next) => { validateTypedSchema(schema.groceryQuerySchema)(req, res, next); }, api.getAllGroceryItems)
-  .post(api.addGroceryItem)
+  .get(validateTypedSchema(schema.getAllGroceryItems) as (req, res, next) => void, api.getAllGroceryItems)
+  .post(validateTypedSchema(schema.addGroceryItemSchema) as (req, res, next) => void, api.addGroceryItem)
   .all(methodNotAllowed);
 
 router.route("/grocery-items/:itemID")
-  .get(api.getGroceryItemById)
-  .patch(api.updateGroceryItem)
+  .get(validateTypedSchema(schema.getGroceryItemById) as (req, res, next) => void, api.getGroceryItemById)
+  .patch(validateTypedSchema(schema.updateGroceryItem) as (req, res, next) => void, api.updateGroceryItem)
+  .delete(validateTypedSchema(schema.deleteGroceryItem) as (req, res, next) => void, api.deleteGroceryItem)
   .all(methodNotAllowed);
 
 router.route("/grocery-items/:itemID/stock").patch(api.adjustStock).all(methodNotAllowed);
