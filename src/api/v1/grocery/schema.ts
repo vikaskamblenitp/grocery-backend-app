@@ -19,7 +19,7 @@ export const schema = {
       name: z.string().min(3).max(255),
       price: z.number().min(0.01),
       quantity: z.number().min(1),
-      description: z.string().min(3).max(255),
+      description: z.string().min(3).max(255).optional(),
       image_url: z.string().url().optional(),
     })
   }),
@@ -33,6 +33,13 @@ export const schema = {
   updateGroceryItem: z.object({
     params: z.object({
       id: z.string().uuid(),
+    }),
+    body: z.object({
+      name: z.string().optional(),
+      price: z.number().min(0.01).optional(),
+      quantity: z.number().min(1).optional(),
+      image_url: z.string().url().optional(),
+      description: z.string().min(3).max(255).optional(),
     })
   }),
 
