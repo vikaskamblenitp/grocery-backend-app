@@ -3,7 +3,7 @@ import { GroceryRepository } from "./groceryRepository";
 import { v4 as uuidv4 } from 'uuid';
 import { GroceryItemApiError } from "./error";
 import { StatusCodes } from "http-status-codes";
-import { ERROR_CODES, GROCERY_ITEM_STATUS } from "#constants";
+import { ERROR_CODES, GROCERY_ITEM_STATUS, ROLES } from "#constants";
 
 class GroceryService {
   private repository: GroceryRepository;
@@ -17,7 +17,12 @@ class GroceryService {
     await this.repository.create(itemData);
   }
 
-  async getAllGroceryItems(query) {
+  async getAllGroceryItems(query, user): Promise<{ data: GroceryItem[] }> {
+    // Only show active items to users
+    if (user.role.code === ROLES.USER) {
+      query.status = GROCERY_ITEM_STATUS.ACTIVE;
+    }
+
     const {
       name,
       minPrice,
