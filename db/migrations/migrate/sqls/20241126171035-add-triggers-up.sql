@@ -61,13 +61,14 @@ CREATE TRIGGER update_data_users_updated_at
     FOR EACH ROW
 EXECUTE PROCEDURE update_updated_at();
 
+-- add delete and update fk rules
 ALTER TABLE data_users DROP CONSTRAINT data_users_role_id_fk;
 ALTER TABLE data_users ADD CONSTRAINT data_users_role_id_fk FOREIGN KEY (role_id) REFERENCES core_roles(id) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
-ALTER TABLE data_items_status_history ADD CONSTRAINT CONSTRAINT data_items_fk;
-ALTER TABLE data_items_status_history ADD CONSTRAINT CONSTRAINT data_items_fk FOREIGN KEY (item_id) REFERENCES data_items(id) ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE data_items_status_history DROP CONSTRAINT data_items_fk;
+ALTER TABLE data_items_status_history ADD CONSTRAINT data_items_fk FOREIGN KEY (item_id) REFERENCES data_items(id) ON DELETE CASCADE ON UPDATE RESTRICT;
 
-ALTER TABLE data_orders DROP CONSTRAINT CONSTRAINT data_orders_user_fk; 
+ALTER TABLE data_orders DROP CONSTRAINT data_orders_user_fk; 
 ALTER TABLE data_orders ADD CONSTRAINT data_orders_user_fk FOREIGN KEY (user_id) REFERENCES data_users(id) ON DELETE CASCADE ON UPDATE RESTRICT;
 
 ALTER TABLE data_orders DROP CONSTRAINT order_status_fk;
