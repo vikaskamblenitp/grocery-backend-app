@@ -1,6 +1,5 @@
 import { data_items as GroceryItem, Prisma } from "@prisma/client";
 import { GroceryRepository } from "./groceryRepository";
-import { v4 as uuidv4 } from 'uuid';
 import { GroceryItemApiError } from "./error";
 import { StatusCodes } from "http-status-codes";
 import { ERROR_CODES, GROCERY_ITEM_STATUS, ROLES } from "#constants";
@@ -12,14 +11,24 @@ class GroceryService {
     this.repository = new GroceryRepository();
   }
 
+  /**
+   * @description add grocery item with default status as ACTIVE
+   * @param {GroceryItem} data: grocery item payload 
+   */
   async addGroceryItem(data: Omit<GroceryItem, "created_at" | "updated_at" | "id" | "status">) {
-    const itemData = { ...data, id: uuidv4(), status: GROCERY_ITEM_STATUS.ACTIVE } as GroceryItem;
+    const itemData = { status: GROCERY_ITEM_STATUS.ACTIVE, ...data } as GroceryItem;
     await this.repository.create(itemData);
   }
 
-  async getAllGroceryItems(query, user): Promise<{ data: GroceryItem[] }> {
+  /**
+   * @description fetch grocery items with filters support 
+   * @param {Object} query : Query options
+   * @param {Object} [user] : token data passed via validateUser middleware
+   * @returns 
+   */
+  async getAllGroceryItems(query, user): Promise<{ records: GroceryItem[] }> {
     // Only show active items to users
-    if (user.role.code === ROLES.USER) {
+    if (user && user.role.code === ROLES.USER) {
       query.status = GROCERY_ITEM_STATUS.ACTIVE;
     }
 
@@ -63,30 +72,49 @@ class GroceryService {
       },
     });
 
-    return { data: response };
+    return { records: response };
   }
 
+  /**
+   * @description get grocery item details bu groceryItemID
+   * @param {string} id : id of the grocery item
+   * @returns {object} response: item details
+   */
   async getGroceryItemById(id: string) {
     const response = await this.repository.findById(id);
 
     return response;
   }
 
+  /**
+   * @description updating the grocery item
+   * @param {string} id : id of the grocery item
+   * @param {Partial<GroceryItem>} data : Partial of GroceryItem
+   */
   async updateGroceryItem(id: string, data: Partial<GroceryItem>) {
     await this.repository.update(id, data);
   }
 
+  /**
+   * @description inventory management
+   * @param {string} id: grocery item id
+   * @param body 
+   */
   async adjustStock(id: string, body: { quantity: number, action: "increase" | "decrease" }) {
     const { quantity, action } = body;
     const existingQuantity = await this.repository.getStock(id);
     if (action === "increase") {
-      await this.repository.updateStock(id, existingQuantity + quantity);
+      await this.repository.updateStock(id, { increment: quantity });
     } else if (action === "decrease") {
       if ((existingQuantity - quantity) < 0) throw new GroceryItemApiError(`Insufficient stock for item with ID ${id}`, StatusCodes.NOT_FOUND, ERROR_CODES.NOT_FOUND);
-      await this.repository.updateStock(id, existingQuantity - quantity);
+      await this.repository.updateStock(id, { decrement: quantity });
     }
   }
 
+  /**
+   * @description This function soft deletes the item by updating status to DELETED
+   * @param {string} id: id of the grocery item 
+   */
   async deleteGroceryItem(id: string) {
     // Check if item exists
     await this.getGroceryItemById(id);

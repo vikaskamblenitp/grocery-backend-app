@@ -8,10 +8,11 @@ datasource db {
 }
 
 model core_order_status {
-  id          Int           @id
-  code        String        @db.VarChar(20)
-  label       String        @db.VarChar(20)
-  data_orders data_orders[]
+  id                         Int                          @id
+  code                       String                       @db.VarChar(20)
+  label                      String                       @db.VarChar(20)
+  data_orders                data_orders[]
+  data_orders_status_history data_orders_status_history[]
 }
 
 model core_roles {
@@ -58,15 +59,16 @@ model data_order_items {
 }
 
 model data_orders {
-  id                String             @id(map: "data_orders_pk") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id           String             @db.Uuid
-  total_price       Decimal            @db.Decimal(10, 2)
-  status            Int
-  created_at        DateTime           @default(now()) @db.Timestamp(6)
-  updated_at        DateTime           @default(now()) @db.Timestamp(6)
-  data_order_items  data_order_items[]
-  data_users        data_users         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "data_orders_user_fk")
-  core_order_status core_order_status  @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_status_fk")
+  id                         String                       @id(map: "data_orders_pk") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                    String                       @db.Uuid
+  total_price                Decimal                      @db.Decimal(10, 2)
+  status                     Int
+  created_at                 DateTime                     @default(now()) @db.Timestamp(6)
+  updated_at                 DateTime                     @default(now()) @db.Timestamp(6)
+  data_order_items           data_order_items[]
+  data_users                 data_users                   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "data_orders_user_fk")
+  core_order_status          core_order_status            @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_status_fk")
+  data_orders_status_history data_orders_status_history[]
 
   @@index([user_id])
 }
@@ -91,6 +93,15 @@ model migrations {
   id     Int      @id @default(autoincrement())
   name   String   @db.VarChar(255)
   run_on DateTime @db.Timestamp(6)
+}
+
+model data_orders_status_history {
+  id                String            @id(map: "data_orders_status_history_pk") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_id          String            @db.Uuid
+  status            Int
+  created_at        DateTime          @default(now()) @db.Timestamp(6)
+  data_orders       data_orders       @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "data_orders_status_history_fk")
+  core_order_status core_order_status @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "data_orders_status_history_status_fk")
 }
 
 enum item_status {

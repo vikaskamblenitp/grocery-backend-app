@@ -14,8 +14,6 @@ export class GroceryRepository {
       Prisma.data_itemsWhereInput,
       keyof Prisma.data_itemsOrderByWithRelationInput
     >(payload);
-
-    console.log(queryOptions);
     
     return prisma.data_items.findMany({
       where: queryOptions.where,
@@ -34,10 +32,7 @@ export class GroceryRepository {
   }
 
   create(data: Omit<GroceryItem, "created_at" | "updated_at">) {
-    return prisma.$transaction([
-      prisma.data_items.create({ data }),
-      prisma.data_items_status_history.create({ data: { item_id: data.id, status: data.status } }),
-    ]);
+    return prisma.data_items.create({ data });
   }
 
   update(id: string, data: Partial<GroceryItem>) {
@@ -49,27 +44,23 @@ export class GroceryRepository {
   }
 
   updateStatus(id: string, status: GroceryItem["status"]) {
-    return prisma.$transaction([
-      prisma.data_items.update({ where: { id }, data: { status } }),
-      prisma.data_items_status_history.create({ data: { item_id: id, status } }),
-    ])
+    return prisma.data_items.update({ where: { id }, data: { status } });
   }
 
-  updateStock(id: string, quantity: number) {
+  updateStock(id: string, quantityPayload: { increment?: number; decrement?: number }) {
+    if(Object.keys(quantityPayload).length > 1) {
+      throw new Error("Can't perform both increment & decrement on one item")
+    }
     return prisma.$transaction(async (tx) => {
       const updatedItem = await prisma.data_items.update({
         where: { id },
-        data: { quantity }
+        data: { quantity: {...quantityPayload.increment ? { increment: quantityPayload.increment } : { decrement: quantityPayload.decrement} } }
       });
 
       if (updatedItem.quantity === 0) {
         await tx.data_items.update({
           where: { id },
           data: { status: GROCERY_ITEM_STATUS.OUT_OF_STOCK as GroceryItem["status"] }
-        });
-
-        await tx.data_items_status_history.create({
-          data: { item_id: id, status: GROCERY_ITEM_STATUS.OUT_OF_STOCK as GroceryItem["status"] }
         });
       }
     });
