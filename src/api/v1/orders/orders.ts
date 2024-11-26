@@ -2,16 +2,22 @@ import { prisma } from "#helpers/prismaClient";
 import { StatusCodes } from "http-status-codes";
 import { OrdersApiError } from "./error";
 import { ERROR_CODES } from "#constants";
+import { ORDER_STATUS } from "#constants/order-status.constants";
 
 class Orders {
+  /**
+   * @description Create an order. supports multiple items in a single order
+   * @param {string} userId : user id
+   * @param data: array of items
+   */
   async create(userId: string, data: { items: { itemId: string, quantity: number }[] }) {
     const itemQuantities = data.items.reduce((acc, item) => {
       acc[item.itemId] = item.quantity;
       return acc;
     }, {});
 
-    // Create order
-    await prisma.$transaction(async tx => {
+    // Create order and its side effects
+    const orderDetails = await prisma.$transaction(async tx => {
       // Check if all items are valid
       const itemsData = await Promise.all(data.items.map(async item => {
         const itemData = await tx.data_items.findUnique({
@@ -36,7 +42,7 @@ class Orders {
             acc += Number(item.price) * itemQuantities[item.id];
             return acc;
           }, 0),
-          status: 1
+          status: ORDER_STATUS.CONFIRMED
         }
       });
 
@@ -63,9 +69,11 @@ class Orders {
         }))
       });
 
-      // TODO: maintain entry in data_order_history
-  })
-}
+      return order;
+    })
+
+    return orderDetails;
+  }
 }
 
 export const orders = new Orders();
