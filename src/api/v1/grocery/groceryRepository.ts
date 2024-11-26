@@ -14,8 +14,6 @@ export class GroceryRepository {
       Prisma.data_itemsWhereInput,
       keyof Prisma.data_itemsOrderByWithRelationInput
     >(payload);
-
-    console.log(queryOptions);
     
     return prisma.data_items.findMany({
       where: queryOptions.where,
@@ -34,10 +32,7 @@ export class GroceryRepository {
   }
 
   create(data: Omit<GroceryItem, "created_at" | "updated_at">) {
-    return prisma.$transaction([
-      prisma.data_items.create({ data }),
-      prisma.data_items_status_history.create({ data: { item_id: data.id, status: data.status } }),
-    ]);
+    return prisma.data_items.create({ data });
   }
 
   update(id: string, data: Partial<GroceryItem>) {
@@ -49,10 +44,7 @@ export class GroceryRepository {
   }
 
   updateStatus(id: string, status: GroceryItem["status"]) {
-    return prisma.$transaction([
-      prisma.data_items.update({ where: { id }, data: { status } }),
-      prisma.data_items_status_history.create({ data: { item_id: id, status } }),
-    ])
+    return prisma.data_items.update({ where: { id }, data: { status } });
   }
 
   updateStock(id: string, quantity: number) {
@@ -66,10 +58,6 @@ export class GroceryRepository {
         await tx.data_items.update({
           where: { id },
           data: { status: GROCERY_ITEM_STATUS.OUT_OF_STOCK as GroceryItem["status"] }
-        });
-
-        await tx.data_items_status_history.create({
-          data: { item_id: id, status: GROCERY_ITEM_STATUS.OUT_OF_STOCK as GroceryItem["status"] }
         });
       }
     });
