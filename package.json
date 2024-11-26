@@ -1,7 +1,7 @@
 {
-  "name": "sse-demo",
+  "name": "grocery-backend",
   "version": "1.0.0",
-  "description": "server sent event demo",
+  "description": "Grocery Backend Application",
   "main": "index.ts",
   "scripts": {
     "start:prod": "npm run prisma:up && npm run build:clean && npx babel-node dist/src/index.js",
