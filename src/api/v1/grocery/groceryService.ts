@@ -26,7 +26,7 @@ class GroceryService {
    * @param {Object} [user] : token data passed via validateUser middleware
    * @returns 
    */
-  async getAllGroceryItems(query, user): Promise<{ data: GroceryItem[] }> {
+  async getAllGroceryItems(query, user): Promise<{ records: GroceryItem[] }> {
     // Only show active items to users
     if (user && user.role.code === ROLES.USER) {
       query.status = GROCERY_ITEM_STATUS.ACTIVE;
@@ -72,7 +72,7 @@ class GroceryService {
       },
     });
 
-    return { data: response };
+    return { records: response };
   }
 
   /**
@@ -104,10 +104,10 @@ class GroceryService {
     const { quantity, action } = body;
     const existingQuantity = await this.repository.getStock(id);
     if (action === "increase") {
-      await this.repository.updateStock(id, existingQuantity + quantity);
+      await this.repository.updateStock(id, { increment: quantity });
     } else if (action === "decrease") {
       if ((existingQuantity - quantity) < 0) throw new GroceryItemApiError(`Insufficient stock for item with ID ${id}`, StatusCodes.NOT_FOUND, ERROR_CODES.NOT_FOUND);
-      await this.repository.updateStock(id, existingQuantity - quantity);
+      await this.repository.updateStock(id, { decrement: quantity });
     }
   }
 

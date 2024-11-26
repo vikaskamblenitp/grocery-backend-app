@@ -26,13 +26,13 @@ export const schema = {
 
   getGroceryItemById: z.object({
     params: z.object({
-      id: z.string().uuid(),
+      itemID: z.string().uuid(),
     })
   }),
 
   updateGroceryItem: z.object({
     params: z.object({
-      id: z.string().uuid(),
+      itemID: z.string().uuid(),
     }),
     body: z.object({
       name: z.string().optional(),
@@ -45,13 +45,13 @@ export const schema = {
 
   deleteGroceryItem: z.object({
     params: z.object({
-      id: z.string().uuid(),
+      itemID: z.string().uuid(),
     })
   }),
 
   adjustStock: z.object({
     params: z.object({
-      id: z.string().uuid(),
+      itemID: z.string().uuid(),
     }),
     body: z.object({
       quantity: z.number().min(1),

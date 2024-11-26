@@ -47,11 +47,14 @@ export class GroceryRepository {
     return prisma.data_items.update({ where: { id }, data: { status } });
   }
 
-  updateStock(id: string, quantity: number) {
+  updateStock(id: string, quantityPayload: { increment?: number; decrement?: number }) {
+    if(Object.keys(quantityPayload).length > 1) {
+      throw new Error("Can't perform both increment & decrement on one item")
+    }
     return prisma.$transaction(async (tx) => {
       const updatedItem = await prisma.data_items.update({
         where: { id },
-        data: { quantity }
+        data: { quantity: {...quantityPayload.increment ? { increment: quantityPayload.increment } : { decrement: quantityPayload.decrement} } }
       });
 
       if (updatedItem.quantity === 0) {
