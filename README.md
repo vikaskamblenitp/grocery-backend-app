@@ -37,7 +37,7 @@
 
 This project is a backend application for managing grocery items, designed as part of the Question Pro assessment. It showcases the ability to build a full-featured CRUD system using modern technologies like Node.js, Express, TypeScript, PostgreSQL, and Prisma. The goal of the application is to demonstrate proficiency in backend development, database integration, and the use of TypeScript for building robust, type-safe applications.
 
-The application allows Admin to create, read, update, delete grocery items and manage inventory levels of grocery items efficiently. By leveraging Prisma as an ORM, the system ensures seamless interaction with the PostgreSQL database, while the modular structure of Express and TypeScript ensures scalability and maintainability. This project serves as a practical demonstration of software engineering skills and adherence to best practices in backend development.
+The application allows Admin to create, read, update, delete grocery items and manage inventory levels of grocery items efficiently and Allows user to view grocery items and book an order. By leveraging Prisma as an ORM, the system ensures seamless interaction with the PostgreSQL database, while the modular structure of Express and TypeScript ensures scalability and maintainability. This project serves as a practical demonstration of software engineering skills and adherence to best practices in backend development.
 
 Though it is a simple project and microservice architecture for scalability wasn't taken taken into consideration as it is out of scope for this project.
 
