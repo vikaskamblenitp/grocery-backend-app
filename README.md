@@ -25,7 +25,9 @@
 - [🧐 About ](#-about-)
 - [🏁 Getting Started ](#-getting-started-)
   - [Prerequisites](#prerequisites)
+  - [Setup env](#setup-env)
   - [Installing](#installing)
+  - [Create or run SQL migration scripts](#create-or-run-sql-migration-scripts)
 - [🎈 Usage ](#-usage-)
 - [🚀 Deployment ](#-deployment-)
 - [⛏️ Built Using ](#️-built-using-)
@@ -53,6 +55,13 @@ What things you need to install the software and how to install them.
 clone first: git clone https://github.com/vikaskamblenitp/qp-assessment.git
 
 install dependencies: npm i
+```
+
+### Setup env
+```
+cp .env.example .env.local
+cp .env.example .env
+- Set right values environment values in both files. As a practice, we use .env.local for local environment and .env for production environment.
 ```
 
 ### Installing
@@ -84,6 +93,21 @@ Start the application
 ```
 npm run dev
 ```
+
+### Create or run SQL migration scripts
+
+```bash
+# Create mirgration script
+npm run migrate:create <migration-name>
+
+# Spin up all sql migrations: migrate up
+npm run migrate:up
+
+# NOTE: migrate-up might not work if you have a dirty database, to reset it, run:
+npm run migrate:reset
+```
+
+Refer `package.json` for more npm scripts
 
 ## 🎈 Usage <a name="usage"></a>
 
