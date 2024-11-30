@@ -29,7 +29,11 @@
   - [Installing](#installing)
   - [Create or run SQL migration scripts](#create-or-run-sql-migration-scripts)
 - [🎈 Usage ](#-usage-)
+  - [Public APIs](#public-apis)
+  - [Admin APIs](#admin-apis)
+  - [Users APIs](#users-apis)
 - [🚀 Deployment ](#-deployment-)
+  - [Docker Commands](#docker-commands)
 - [⛏️ Built Using ](#️-built-using-)
 - [Design Patterns used](#design-patterns-used)
 - [✍️ Authors ](#️-authors-)
@@ -111,11 +115,111 @@ Refer `package.json` for more npm scripts
 
 ## 🎈 Usage <a name="usage"></a>
 
-Add notes about how to use the system.
+This project contains two type of users. ie. Admin & End user
+
+Admin credentials
+```
+email - vikasmkamble007@gmail.com
+password - QuestionPro@123
+```
+### Public APIs
+```bash
+# Login
+http://localhost:3000/api/v1/users/login
+# body
+{
+  "email": <email>,
+  "password": <password>
+}
+
+# register user
+http://localhost:3000/api/v1/users/create
+
+# body
+{
+  "first_name": <first name>,
+  "last_name": <last name>,
+  "email": <email>,
+  "password": <password>"
+}
+```
+
+### Admin APIs
+```bash
+# Add Grocery Item
+http://localhost:3000/api/v1/grocery-items
+
+# body as following
+{
+    "name": "Chilli",
+    "description": "The best chilli",
+    "price": 25,
+    "quantity": 1000
+}
+
+# View Grocery Items
+http://localhost:3000/api/v1/grocery-items?page=1&limit=10&status=ACTIVE
+
+# View Grocery Item
+http://localhost:3000/api/v1/grocery-items/:itemID
+
+# Update Grocery Item
+http://localhost:3000/api/v1/grocery-items/:itemID
+
+# body with all optional
+{
+  name: <name>,
+  price: <price>,
+  description: <description-goes-here>,
+  status: <"ACTIVE" | "INACTIVE" |"DELETED" | "OUT_OF_STOCK">
+}
+
+# Manage Inventory Levels
+http://localhost:3002/api/v1/grocery-items/:itemID/manage-stock
+
+# body
+{
+    "quantity": 10,
+    "action": <"decrease" | "increase">
+}
+
+```
+
+### Users APIs
+```bash
+# View Grocery Items (Only returns ACTIVE Grocery Items)
+http://localhost:3000/api/v1/grocery-items
+
+# Book Order
+http://localhost:3000/api/v1/orders
+# body
+{
+    "items": [
+        { "itemId": <itemID1>, "quantity": 2 },
+        { "itemId": <itemID2>, "quantity": 1 }
+    ]
+}
+```
+
 
 ## 🚀 Deployment <a name = "deployment"></a>
 
 Can be deployed using K8S.
+### Docker Commands
+Build image 
+```
+Docker build -t question-pro .
+```
+
+Run Container in interactive mode
+```
+Docker run -it -e <path to .env> -p 3001:3000 question-pro
+```
+
+Run Container in detach mode
+```
+Docker run -d -e <path to .env> -p 3001:3000 question-pro
+```
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
