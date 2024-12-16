@@ -1,5 +1,5 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+. "$(dirname "$0")/_/h"
 
 IFS=$'\n'
 # regex supports repos with a package.json at root-level
