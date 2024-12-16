@@ -1,4 +1,4 @@
-import { data_items as GroceryItem, Prisma } from "@prisma/client";
+import { Items as GroceryItem, Prisma } from "@prisma/client";
 import { GroceryRepository } from "./groceryRepository";
 import { GroceryItemApiError } from "./error";
 import { StatusCodes } from "http-status-codes";
@@ -43,7 +43,7 @@ class GroceryService {
       sortOrder = 'asc',
     } = query;
 
-    const filters: Prisma.Enumerable<Prisma.data_itemsWhereInput> = [];
+    const filters: Prisma.Enumerable<Prisma.ItemsWhereInput> = [];
 
     // Add filters based on query params
     if (name) {
@@ -67,7 +67,7 @@ class GroceryService {
         limit: parseInt(limit),
       },
       sort: {
-        field: sortField as keyof Prisma.data_itemsOrderByWithRelationInput,
+        field: sortField as keyof Prisma.ItemsOrderByWithRelationInput,
         order: sortOrder as 'asc' | 'desc',
       },
     });

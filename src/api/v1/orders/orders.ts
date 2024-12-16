@@ -20,7 +20,7 @@ class Orders {
     const orderDetails = await prisma.$transaction(async tx => {
       // Check if all items are valid
       const itemsData = await Promise.all(data.items.map(async item => {
-        const itemData = await tx.data_items.findUnique({
+        const itemData = await tx.items.findUnique({
           where: { id: item.itemId, status: "ACTIVE" }
         });
 
@@ -35,7 +35,7 @@ class Orders {
         return itemData;
       }));
 
-      const order = await tx.data_orders.create({
+      const order = await tx.orders.create({
         data: {
           user_id: userId,
           total_price: itemsData.reduce((acc: number, item) => {
@@ -49,7 +49,7 @@ class Orders {
       // Update stock
       // TODO: check for OUT_OF_STOCK status. It can be done via triggers in the database
       for (const item of data.items) {
-        await tx.data_items.update({
+        await tx.items.update({
           where: { id: item.itemId },
           data: {
             quantity: {
@@ -60,7 +60,7 @@ class Orders {
       }
 
       // insertion into data_order_items
-      await tx.data_order_items.createMany({
+      await tx.orderItems.createMany({
         data: itemsData.map(item => ({
           order_id: order.id,
           item_id: item.id,
